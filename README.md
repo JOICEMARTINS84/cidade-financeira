@@ -1,6 +1,12 @@
-# Cidade Financeira 
+# Cidade Financeira — V10
 
-Jogo educacional de Matemática Financeira do projeto **Matemática & Contexto**, desenvolvido em Python e Pygame.
+Jogo educacional de Matemática Financeira do projeto **Matemática & Contexto**, desenvolvido em Python e Pygame por Joice Souza Martins Santos.
+
+## Edição navegador (experimental)
+
+A página `index.html` inicializa Python/Pygame-CE via Pyodide e utiliza `cidade-web.zip`, pacote com o código original adaptado e os recursos gráficos. O progresso é armazenado no navegador, em perfis locais.
+
+**Publicação:** envie `cidade-web.zip` à raiz do repositório sem extrair o arquivo. Em Settings → Pages, selecione Deploy from a branch → main → / (root) → Save. O endereço esperado é https://joicemartins84.github.io/cidade-financeira/ . O site só será jogável após a inclusão do pacote e ativação do Pages.
 
 ## O jogo
 
@@ -8,15 +14,7 @@ Jogo educacional de Matemática Financeira do projeto **Matemática & Contexto**
 - 18 minijogos de estratégias e cálculos financeiros.
 - Campanhas para Ensino Fundamental e Ensino Médio, com 15 metas.
 - Escolha do personagem, nome, perfis, progressão e conquistas.
-- Dados de progresso armazenados localmente em SQLite.
 
-## Como jogar no Windows
+## Estado de validação
 
-Após a inclusão dos arquivos do jogo neste repositório, baixe e extraia o conteúdo e execute `ABRIR_JOGO.bat` com o Python instalado. Ou, na pasta do projeto:
-
-```powershell
-py -m pip install -r requirements.txt
-py main.py
-```
-
-A versão original é desktop. A versão para navegador ainda requer adaptação e testes.
+Testes locais das regras econômicas, projeção e auditoria de questões aprovados. A execução WASM, a interface de toque e o armazenamento no navegador ainda exigem testes em dispositivos reais.
