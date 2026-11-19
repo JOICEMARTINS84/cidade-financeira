@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Cidade Financeira | Matemática &amp; Contexto</title><meta name="description" content="Jogo educacional de matemática financeira: explore a cidade, resolva desafios e administre seus recursos.">
+<style>
+:root{color-scheme:dark;--gold:#d4b879;--bg:#101010;--line:#574b34;--text:#f5edda}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,sans-serif}main{max-width:1200px;margin:auto;padding:16px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}h1{font-size:clamp(23px,4vw,35px);margin:0;color:var(--gold);letter-spacing:.02em}p{margin:8px 0;color:#c8c0ae}small{color:#b4aa94}button,input{font:inherit}button{background:#261f15;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:11px 15px;cursor:pointer;touch-action:manipulation}button:active{background:#75592d}button:disabled{opacity:.5;cursor:default}.primary{background:var(--gold);color:#15100b;font-weight:700}.viewport{background:#080808;border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative}canvas{display:block;width:100%;height:auto;aspect-ratio:11/7;outline:none;touch-action:none;background:#101010}.cover{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:15px;background:radial-gradient(ellipse at center,#3b3021,#111 75%)}.cover[hidden]{display:none}.cover h2{font-size:clamp(22px,5vw,50px);margin:0;color:var(--gold)}.controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-top:12px}.move,.actions,.text-entry{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.move button{min-width:44px;touch-action:none}.text-entry input{min-width:100px;width:175px;padding:9px;background:#181818;border:1px solid var(--line);border-radius:8px;color:#fff}.text-entry input::placeholder{color:#b4aa94}.text-entry button{padding:9px}.status{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:13px;color:#c8c0ae;margin:9px 0 15px}a{color:var(--gold)}footer{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}main:fullscreen{background:#101010;overflow:auto;max-width:none}main:fullscreen .viewport{max-width:min(100%,calc((100vh - 180px)*11/7));margin:auto}@media(max-width:650px){main{padding:8px}.controls{justify-content:center}.move,.actions,.text-entry{justify-content:center}button{padding:9px 10px}header{margin-bottom:8px}}
+</style>
+<script src="https://cdn.jsdelivr.net/pyodide/v314.0.8/full/pyodide.js"></script>
+</head>
+<body><main id="game-page"><header><div><small>MATEMÁTICA &amp; CONTEXTO</small><h1>Cidade Financeira</h1><small>V10 • Edição navegador experimental</small></div><button id="full">Tela cheia</button></header>
+<div class="viewport"><canvas id="canvas" width="1100" height="700" tabindex="0" aria-label="Tela do jogo Cidade Financeira"></canvas><div class="cover" id="cover"><h2>Cidade Financeira</h2><p>Explore a cidade. Trabalhe. Aprenda a administrar seu dinheiro.</p><button class="primary" id="start">Iniciar jogo</button><p><small>Na primeira vez, é necessário baixar o motor do jogo.</small></p></div></div>
+<div class="status"><span id="status" role="status">Clique em iniciar.</span><span id="save-status"></span></div>
+<div class="controls"><div class="move" aria-label="Movimentação"><button data-hold="LEFT">◀</button><button data-hold="UP">▲</button><button data-hold="DOWN">▼</button><button data-hold="RIGHT">▶</button></div><div class="actions"><button data-key="e">Interagir</button><button data-key="m">Metas</button><button data-key="f">Cálculos</button><button data-key="g">Minijogos</button><button data-key="n">Distrito</button><button data-key="ESCAPE">Voltar</button><button data-key="RETURN">OK</button></div><div class="text-entry"><input id="entry" maxlength="24" placeholder="Nome ou resposta" aria-label="Nome ou resposta"><button id="type">Inserir</button></div></div>
+<p><small>Computador: WASD ou setas para andar, E para interagir. Celular: use os controles da página e a tela na horizontal. O progresso é local, neste navegador.</small></p>
+<footer><small>Projeto educacional Matemática &amp; Contexto • Joice Souza Martins Santos</small></footer></main>
+<script>
+const canvas=document.getElementById('canvas'), cover=document.getElementById('cover'), start=document.getElementById('start'), status=document.getElementById('status');
+const held=new Set(),pressed=[],texts=[];
+window.cfReadControls=()=>JSON.stringify({held:[...held],pressed:pressed.splice(0),text:texts.splice(0)});
+document.querySelectorAll('[data-hold]').forEach(b=>{const key=b.dataset.hold;b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);held.add(key);pressed.push(key);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>held.delete(key));});
+window.addEventListener('blur',()=>held.clear());
+document.querySelectorAll('[data-key]').forEach(b=>b.addEventListener('click',()=>{pressed.push(b.dataset.key);canvas.focus();}));
+const entry=document.getElementById('entry');function put(){if(entry.value){texts.push(entry.value);entry.value='';}canvas.focus();}
+document.getElementById('type').onclick=put;entry.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter'){e.preventDefault();put();}});
+document.getElementById('full').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.getElementById('game-page').requestFullscreen();}catch(e){status.textContent='Tela cheia não disponível neste navegador.';}};
+start.onclick=async()=>{start.disabled=true;start.textContent='Carregando…';try{
+status.textContent='Baixando arquivos do jogo…';const response=await fetch('./cidade-web.zip');if(!response.ok)throw new Error('Pacote cidade-web.zip não encontrado (HTTP '+response.status+').');
+const zip=new Uint8Array(await response.arrayBuffer());status.textContent='Preparando Python para o navegador…';const py=await loadPyodide();
+py.canvas.setCanvas2D(canvas);await py.loadPackage('pygame-ce');py.FS.writeFile('/cidade-web.zip',zip);
+status.textContent='Carregando a cidade…';await py.runPythonAsync(`import os, sys, zipfile
+os.makedirs('/cidade_game', exist_ok=True)
+with zipfile.ZipFile('/cidade-web.zip') as archive:
+    archive.extractall('/cidade_game')
+sys.path.insert(0, '/cidade_game')
+import web_boot
+`);
+cover.hidden=true;canvas.focus();await py.runPythonAsync('await web_boot.run()');
+}catch(err){console.error(err);status.textContent='Não foi possível iniciar: '+err.message;cover.hidden=false;start.textContent='Recarregar página';start.disabled=false;start.onclick=()=>location.reload();}};
+</script></body></html>
