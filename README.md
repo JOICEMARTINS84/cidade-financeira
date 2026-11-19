@@ -1,4 +1,4 @@
-# Cidade Financeira — V10
+# Cidade Financeira 
 
 Jogo educacional de Matemática Financeira do projeto **Matemática & Contexto**, desenvolvido em Python e Pygame.
 
